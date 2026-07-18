@@ -98,14 +98,12 @@ a { color: var(--accent); }
 .tagline {
   font-size: 1.2rem;
   color: var(--text-on-navy);
-  max-width: 640px;
   margin: 0 0 10px;
   font-weight: 500;
 }
 
 .subtagline {
   color: var(--text-on-navy-dim);
-  max-width: 620px;
   margin: 0 0 32px;
   font-size: 0.98rem;
 }
