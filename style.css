@@ -208,10 +208,52 @@ h2 {
 
 /* ---------- Experience ---------- */
 
-.job { margin-bottom: 44px; }
+.job {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 28px 28px 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
 .job:last-of-type { margin-bottom: 0; }
 
+.job::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(108, 92, 231, 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.job::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.job:hover {
+  border-color: var(--accent-soft);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(20, 22, 31, 0.07);
+}
+
+.job:hover::before { opacity: 1; }
+.job:hover::after { transform: scaleY(1); }
+
 .job-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -220,7 +262,14 @@ h2 {
   margin-bottom: 10px;
 }
 
-.job-header h3 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+.job-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.job:hover .job-header h3 { color: var(--accent); }
 
 .job-meta {
   margin: 2px 0 0;
@@ -237,6 +286,7 @@ h2 {
 }
 
 .job ul {
+  position: relative;
   margin: 0 0 16px;
   padding-left: 20px;
 }
@@ -247,6 +297,7 @@ h2 {
 }
 
 .job-tags {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -261,6 +312,13 @@ h2 {
   background: var(--accent-wash);
   padding: 5px 11px;
   border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.job:hover .job-tag:hover {
+  background: var(--accent);
+  color: #FFFFFF;
+  transform: translateY(-1px);
 }
 
 .education {

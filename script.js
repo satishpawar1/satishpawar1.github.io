@@ -20,3 +20,15 @@
 
   targets.forEach(function (el) { observer.observe(el); });
 })();
+
+(function () {
+  var cards = document.querySelectorAll('.job');
+
+  cards.forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      var rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+    });
+  });
+})();
