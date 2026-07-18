@@ -22,7 +22,7 @@
 })();
 
 (function () {
-  var cards = document.querySelectorAll('.job, .stat-card, .edu-card');
+  var cards = document.querySelectorAll('.job, .stat-card, .edu-card, .project-card');
 
   cards.forEach(function (card) {
     card.addEventListener('mousemove', function (e) {
