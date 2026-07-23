@@ -321,27 +321,15 @@
     border-left: 2px solid var(--accent); padding-left: 16px; max-width: 70ch;
   }
 
-  /* ---- slide 6: hypotheses ---- */
-  .problem-statement {
-    background: var(--accent-2-soft);
-    border-radius: 4px;
-    padding: 18px 22px;
-    font-size: 15px;
-    line-height: 1.55;
-    margin-bottom: 24px;
-    max-width: 78ch;
+  /* ---- appendix C: evidence traceability table ---- */
+  .evidence-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .evidence-table th {
+    text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--text-faint); padding: 0 16px 12px; border-bottom: 1px solid var(--line);
   }
-  .hyp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .hyp-card {
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 16px 20px;
-    display: flex; gap: 14px; align-items: baseline;
-  }
-  .hyp-card h4 { font-size: 14px; font-weight: 600; margin: 0; min-width: 150px; color: var(--accent-2); }
-  .hyp-card p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-  .hyp-card.thin { opacity: 0.6; }
+  .evidence-table td { padding: 14px 16px; border-bottom: 1px solid var(--line); color: var(--text-muted); line-height: 1.5; vertical-align: top; }
+  .evidence-table td:first-child { color: var(--text); font-weight: 600; }
+  .evidence-table tr:last-child td { border-bottom: none; }
 
   /* ---- slide 7: evidence ---- */
   .evidence-card {
@@ -685,7 +673,7 @@
           <div class="eco-chip">Digital tools</div>
         </div>
       </div>
-      <p class="implication"><b>Backup detail:</b> handoffs are where confidence breaks down because ownership is split across providers, policies, physical spaces and digital systems.</p>
+      <p class="implication"><b>Backup detail:</b> The passenger experiences one journey, but the information needed to recover from disruption sits across airlines, airports, TSA, parking, rideshare, and other systems.</p>
     </div>
   </section>
 
@@ -697,7 +685,7 @@
       <div class="scope-grid">
         <div class="scope-card"><p class="eyebrow">Geography</p><p>U.S. domestic commercial air travel</p></div>
         <div class="scope-card"><p class="eyebrow">Stakeholder</p><p>Passenger experience, not operations</p></div>
-        <div class="scope-card"><p class="eyebrow">Initial segment</p><p>Leisure / economy travelers</p></div>
+        <div class="scope-card"><p class="eyebrow">Initial focus</p><p>U.S. domestic passengers experiencing disruption, especially economy/basic-economy travelers with connections or downstream commitments.</p></div>
       </div>
       <div class="scope-io">
         <div><b>In scope:</b> flight search and booking; travel to airport; check-in, security and boarding; in-flight experience, arrival, baggage and exit.</div>
@@ -709,15 +697,19 @@
   <section class="slide" id="s11">
     <div class="content">
       <p class="eyebrow">Appendix C</p>
-      <h1 class="title serif">The working problem is confidence across fragmented handoffs</h1>
-      <p class="dek">The discovery question is whether the deeper pain is uncertainty and recovery, not isolated airport annoyances.</p>
-      <p class="problem-statement"><b>Working problem statement:</b> passengers do not just struggle with individual moments like delays, security or baggage. The deeper pain may be losing predictability, control and clear next steps as they move across journey handoffs.</p>
-      <div class="hyp-grid">
-        <div class="hyp-card"><h4>Delay recovery</h4><p>Disruption hurts most when options and next actions are unclear.</p></div>
-        <div class="hyp-card"><h4>Timing stress</h4><p>Airport anxiety comes from uncertainty, not only actual wait time.</p></div>
-        <div class="hyp-card thin"><h4>Coordination load</h4><p>Leisure and family trips add bags, people, timing and unfamiliar spaces. <em style="color:var(--text-faint)">(no direct interview evidence yet)</em></p></div>
-        <div class="hyp-card"><h4>Fragmented guidance</h4><p>Travelers stitch together airline, airport, TSA and ground transport information.</p></div>
-      </div>
+      <h1 class="title serif">How the evidence maps to the opportunity areas</h1>
+      <p class="dek">Each opportunity area is tied back to a synthesis theme and the specific evidence behind it.</p>
+      <table class="evidence-table">
+        <thead>
+          <tr><th style="width:26%">Theme</th><th style="width:44%">Supporting evidence</th><th style="width:30%">Opportunity it informed</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generic communication is not enough</td><td>Unily/Global Traveler: only 26% get timely proactive updates; Aparna wanted clearer and more frequent updates; Sarah's gate info lagged reality.</td><td>Personalized disruption guidance</td></tr>
+          <tr><td>Recovery capacity cannot keep pace</td><td>Sarah: ~2 staff for ~50 disrupted passengers; Arjun's outcome depended on which agent he reached; Fortune/Hopper: 43% unresolved after 2+ hours.</td><td>Self-service recovery / scalable guidance</td></tr>
+          <tr><td>Disruption leaks outside the airline</td><td>Arjun's parking reservation expired; Aparna had to rework ground transport; Sarah's connections unraveled.</td><td>Downstream coordination</td></tr>
+          <tr><td>Delay risk may be detectable earlier</td><td>DOT Table 7B: many delays are airline-side or cascade-related, not purely weather-driven.</td><td>Earlier risk detection and recovery triggering</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
