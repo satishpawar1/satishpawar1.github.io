@@ -1,0 +1,787 @@
+<title>How do people use air travel? — Deloitte Product Design Challenge</title>
+<style>
+  :root {
+    --bg: #F4F6F8;
+    --bg-card: #FFFFFF;
+    --text: #14202B;
+    --text-muted: #51606D;
+    --text-faint: #8B99A5;
+    --accent: #C9791F;
+    --accent-soft: #F3E3CD;
+    --accent-2: #3D5A73;
+    --accent-2-soft: #E3EAEF;
+    --line: #D8DFE5;
+    --dark-bg: #14202B;
+    --dark-bg-2: #1B2833;
+    --dark-text: #EEF2F5;
+    --dark-text-muted: #9FB0BC;
+    --dark-line: #2A3B47;
+    --shadow: 0 1px 2px rgba(20,32,43,0.04), 0 8px 24px rgba(20,32,43,0.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #10171E;
+    --bg-card: #182430;
+    --text: #E8EDF1;
+    --text-muted: #9AA8B3;
+    --text-faint: #6C7A85;
+    --accent: #E0A052;
+    --accent-soft: #3A2E1C;
+    --accent-2: #7FA1B8;
+    --accent-2-soft: #1F2E38;
+    --line: #2A3844;
+    --dark-bg: #0A1015;
+    --dark-bg-2: #0E1620;
+    --dark-text: #EEF2F5;
+    --dark-text-muted: #93A3AE;
+    --dark-line: #26333D;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10171E;
+      --bg-card: #182430;
+      --text: #E8EDF1;
+      --text-muted: #9AA8B3;
+      --text-faint: #6C7A85;
+      --accent: #E0A052;
+      --accent-soft: #3A2E1C;
+      --accent-2: #7FA1B8;
+      --accent-2-soft: #1F2E38;
+      --line: #2A3844;
+      --dark-bg: #0A1015;
+      --dark-bg-2: #0E1620;
+      --dark-text: #EEF2F5;
+      --dark-text-muted: #93A3AE;
+      --dark-line: #26333D;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+  .serif { font-family: ui-serif, "New York", Georgia, "Times New Roman", serif; }
+  .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  .deck {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+  section.slide {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(20px, 4vw, 56px) clamp(28px, 7vw, 96px) 72px;
+    position: relative;
+    overflow-y: auto;
+  }
+  section.slide.dark { background: var(--dark-bg); color: var(--dark-text); }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  section.slide.dark .eyebrow { color: var(--accent); }
+
+  h1.title {
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.15;
+    font-weight: 500;
+    margin: 0 0 10px;
+    text-wrap: balance;
+    max-width: 16ch;
+  }
+  section.slide.dark h1.title { color: var(--dark-text); }
+  h1.title.wide { max-width: none; }
+
+  .dek {
+    font-size: clamp(14px, 1.3vw, 18px);
+    color: var(--text-muted);
+    max-width: 62ch;
+    line-height: 1.45;
+    margin: 0 0 clamp(16px, 2.2vw, 32px);
+  }
+  section.slide.dark .dek { color: var(--dark-text-muted); }
+
+  .content { max-width: 1180px; width: 100%; margin: 0 auto; }
+
+  /* ---- nav rail ---- */
+  .rail {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    z-index: 50;
+  }
+  .rail-side { display: flex; align-items: center; gap: 14px; }
+  .rail-count { font-size: 12px; color: var(--text-faint); min-width: 52px; }
+  .dots { display: flex; gap: 7px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--line);
+    cursor: pointer; border: none; padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.3); }
+  .nav-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn:focus-visible, .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- slide 1: scope tag + rationale ---- */
+  .scope-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid var(--dark-line);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--dark-text-muted);
+    margin-bottom: clamp(20px, 3vw, 32px);
+  }
+  .scope-tag b { color: var(--accent); font-weight: 700; }
+  .rationale-rows {
+    display: flex;
+    flex-direction: column;
+    margin-top: 12px;
+  }
+  .rationale-row {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(20px, 3vw, 48px);
+    padding: clamp(22px, 3.2vw, 36px) 4px;
+    border-top: 1px solid var(--dark-line);
+  }
+  .rationale-row:last-child { border-bottom: 1px solid var(--dark-line); }
+  .rationale-row-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    min-width: 380px;
+    flex-shrink: 0;
+  }
+  .rationale-row-head .rationale-num {
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .rationale-row-head h3 {
+    font-size: clamp(18px, 1.7vw, 22px);
+    font-weight: 600;
+    margin: 0;
+    color: var(--dark-text);
+  }
+  .rationale-row p {
+    font-size: clamp(14.5px, 1.15vw, 16.5px);
+    line-height: 1.65;
+    color: var(--dark-text-muted);
+    margin: 0;
+    max-width: 64ch;
+    padding-top: 3px;
+  }
+
+  /* ---- slide 2: journey stepper ---- */
+  .stepper { display: flex; position: relative; padding-top: 8px; gap: 14px; }
+  .stepper::before {
+    content: "";
+    position: absolute;
+    top: 30px; left: 22px; right: 22px;
+    height: 1px;
+    background: var(--line);
+  }
+  .step { flex: 1; text-align: left; position: relative; }
+  .step-num {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--accent-2);
+    margin-bottom: 14px;
+    position: relative; z-index: 2;
+    box-shadow: var(--shadow);
+  }
+  .step-label { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .step-meta { font-size: 12px; color: var(--text-faint); line-height: 1.5; margin-bottom: 10px; }
+  .step-meta b { color: var(--text-muted); font-weight: 600; }
+  .step-gap { font-size: 12.5px; color: var(--accent); line-height: 1.5; }
+  .step-gap b { font-weight: 600; }
+  .implication {
+    margin-top: clamp(28px,4vw,48px);
+    border-left: 2px solid var(--accent);
+    padding-left: 18px;
+    font-size: 14.5px;
+    color: var(--text-muted);
+    max-width: 70ch;
+  }
+  .implication b { color: var(--text); font-weight: 600; }
+
+  /* ---- slide 3: ecosystem ---- */
+  .ecosystem { display: grid; grid-template-columns: 1fr 1.1fr 1fr; align-items: center; gap: 12px; }
+  .eco-col { display: flex; flex-direction: column; gap: 12px; }
+  .eco-col.right { align-items: flex-end; }
+  .eco-chip {
+    display: inline-flex;
+    padding: 12px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+  }
+  .eco-center { display: flex; justify-content: center; }
+  .eco-hub {
+    width: 168px; height: 168px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    color: white;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .eco-hub b { font-size: 16px; margin-bottom: 4px; }
+  .eco-hub span { font-size: 11.5px; opacity: 0.85; max-width: 20ch; }
+
+  /* ---- slide 4: scope (now appendix) ---- */
+  .scope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+  .scope-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 22px;
+    box-shadow: var(--shadow);
+  }
+  .scope-card .eyebrow { margin-bottom: 10px; font-size: 11px; }
+  .scope-card p { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.35; }
+  .scope-io { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .scope-io div {
+    font-size: 13px; color: var(--text-muted); line-height: 1.55;
+    border-top: 1px solid var(--line); padding-top: 12px;
+  }
+  .scope-io b { color: var(--text); }
+
+  /* ---- slide 4 (new): industry research findings ---- */
+  .finding-row { display: flex; gap: 22px; align-items: flex-start; padding: clamp(14px,2vw,20px) 0; border-bottom: 1px solid var(--line); }
+  .finding-row:first-child { border-top: 1px solid var(--line); }
+  .finding-num {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: var(--bg-card); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14.5px; color: var(--accent-2); box-shadow: var(--shadow);
+  }
+  .finding-body h4 { margin: 0 0 7px; font-size: clamp(17px,1.6vw,20px); font-weight: 600; }
+  .finding-body p { margin: 0; font-size: 15.5px; color: var(--text-muted); line-height: 1.5; max-width: 82ch; }
+  .finding-body .src { font-size: 13px; color: var(--text-faint); margin-top: 6px; }
+
+  /* ---- slide 5: stats ---- */
+  .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .stat-num { font-size: 30px; font-weight: 600; color: var(--accent); line-height: 1; }
+  .stat-card p { margin: 0; font-size: 12.5px; color: var(--text-muted); line-height: 1.45; }
+  .bridge-line {
+    margin-top: 16px; font-size: 13px; color: var(--text-muted);
+    border-left: 2px solid var(--accent); padding-left: 16px; max-width: 70ch;
+  }
+
+  /* ---- slide 6: hypotheses ---- */
+  .problem-statement {
+    background: var(--accent-2-soft);
+    border-radius: 4px;
+    padding: 18px 22px;
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 78ch;
+  }
+  .hyp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .hyp-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 20px;
+    display: flex; gap: 14px; align-items: baseline;
+  }
+  .hyp-card h4 { font-size: 14px; font-weight: 600; margin: 0; min-width: 150px; color: var(--accent-2); }
+  .hyp-card p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  .hyp-card.thin { opacity: 0.6; }
+
+  /* ---- slide 7: evidence ---- */
+  .evidence-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 4px;
+    padding: 13px 22px;
+    margin-bottom: 9px;
+    box-shadow: var(--shadow);
+  }
+  .evidence-card h4 { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+  .evidence-card ul { margin: 0; padding-left: 20px; }
+  .evidence-card li { font-size: 14px; color: var(--text-muted); line-height: 1.4; margin-bottom: 3px; }
+  .evidence-card em { color: var(--text); font-style: normal; }
+  .insight-bar {
+    background: var(--accent-soft);
+    border-radius: 4px;
+    padding: 11px 20px;
+    font-size: 14.5px;
+    margin-top: 2px;
+  }
+  #s5 .dek { margin-bottom: 14px; }
+
+  /* ---- slide 6 (new): delay root cause donut ---- */
+  .rootcause-grid { display: grid; grid-template-columns: 300px 1fr; gap: clamp(32px,5vw,64px); align-items: center; }
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .donut {
+    width: 240px; height: 240px; border-radius: 50%;
+    background: conic-gradient(
+      var(--line) 0% 77.62%,
+      var(--accent) 77.62% 92.28%,
+      var(--accent-2) 92.28% 98.78%,
+      var(--text-faint) 98.78% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .donut-hole {
+    width: 148px; height: 148px; border-radius: 50%; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .donut-hole b { font-size: 30px; color: var(--accent); line-height: 1; }
+  .donut-hole span { font-size: 10.5px; color: var(--text-muted); text-align: center; max-width: 14ch; margin-top: 4px; line-height: 1.3; }
+  .legend { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .legend-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-row b { color: var(--text); font-weight: 600; margin-left: auto; }
+
+  .rootcause-body h2 { font-size: clamp(22px,2vw,28px); font-weight: 600; margin: 0 0 12px; line-height: 1.25; }
+  .rootcause-body h2 b { color: var(--accent); }
+  .rootcause-body .nuance {
+    font-size: 14.5px; color: var(--text-muted); line-height: 1.6; margin: 0 0 16px; max-width: 68ch;
+  }
+  .rootcause-body .nuance b { color: var(--text); }
+  .rootcause-body .src { font-size: 11.5px; color: var(--text-faint); margin-top: 4px; }
+
+  /* ---- slide 8: synthesis ---- */
+  .theme-row {
+    display: flex; gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .theme-row:first-child { border-top: 1px solid var(--line); }
+  .theme-row h4 { min-width: 270px; font-size: 20px; font-weight: 600; margin: 0; }
+  .theme-row p { font-size: 16px; color: var(--text-muted); margin: 0; line-height: 1.55; max-width: 74ch; }
+  .theme-row .theme-evidence { display: block; margin-top: 7px; font-size: 14px; color: var(--text-faint); line-height: 1.5; }
+  #s7 .dek { margin-bottom: 14px; }
+
+  /* ---- slide 9: opportunity table ---- */
+  .score-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .score-table th {
+    text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--dark-text-muted); padding: 0 16px 12px; border-bottom: 1px solid var(--dark-line);
+  }
+  .score-table td { padding: 16px; border-bottom: 1px solid var(--dark-line); color: var(--dark-text-muted); line-height: 1.5; vertical-align: top; }
+  .score-table tr.top td:first-child { color: var(--dark-text); font-weight: 600; }
+  .score-table td:first-child { font-weight: 600; }
+  .score-table tr.top { background: rgba(224,160,82,0.08); }
+  .question-bar {
+    margin-top: 22px;
+    border-left: 2px solid var(--accent);
+    padding-left: 18px;
+    font-size: 15px;
+    max-width: 70ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deck { scroll-behavior: auto; }
+    .dot, .nav-btn { transition: none; }
+  }
+</style>
+
+<div class="deck" id="deck">
+
+  <section class="slide dark" id="s1">
+    <div class="content">
+      <p class="eyebrow">Why this topic</p>
+      <h1 class="title serif wide">I chose "How do people use air travel?"</h1>
+      <div class="scope-tag">SCOPE: <b>U.S. Domestic Air Travel</b></div>
+      <div class="rationale-rows">
+        <div class="rationale-row">
+          <div class="rationale-row-head">
+            <span class="rationale-num mono">01</span>
+            <h3>Personal connection</h3>
+          </div>
+          <p>I've lived this friction firsthand, so I could explore with real intuition — not just secondhand research.</p>
+        </div>
+        <div class="rationale-row">
+          <div class="rationale-row-head">
+            <span class="rationale-num mono">02</span>
+            <h3>A broad, end-to-end journey</h3>
+          </div>
+          <p>From booking to arrival, the journey spans many touchpoints — airline, airport, TSA, parking, ground transport — forcing travelers to stitch together fragmented information across apps and systems. Many failure points also means many opportunities to improve the experience.</p>
+        </div>
+        <div class="rationale-row">
+          <div class="rationale-row-head">
+            <span class="rationale-num mono">03</span>
+            <h3>Rich, trusted data already exists</h3>
+          </div>
+          <p>The U.S. Department of Transportation, J.D. Power, and other industry sources already publish detailed, credible data on delays, satisfaction, and disruption — a strong evidence base to analyze, not a blank slate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s2">
+    <div class="content">
+      <p class="eyebrow">Passenger journey</p>
+      <h1 class="title serif wide">Six stages, one journey — but no single owner sees it end to end</h1>
+      <p class="dek">From planning to arrival, U.S. domestic passengers move through six distinct stages — each with its own apps, systems, and owner.</p>
+      <div class="stepper">
+        <div class="step">
+          <div class="step-num mono">01</div>
+          <div class="step-label">Plan &amp; Book</div>
+          <div class="step-meta"><b>Apps:</b> Google Flights, Kayak, airline app, OTAs</div>
+          <div class="step-gap"><b>Gap:</b> Research scattered across sites; fare rules unclear</div>
+        </div>
+        <div class="step">
+          <div class="step-num mono">02</div>
+          <div class="step-label">Pre-Trip</div>
+          <div class="step-meta"><b>Apps:</b> Airline app, weather app, notes</div>
+          <div class="step-gap"><b>Gap:</b> No single place to prepare for the trip</div>
+        </div>
+        <div class="step">
+          <div class="step-num mono">03</div>
+          <div class="step-label">Airport &amp; Security</div>
+          <div class="step-meta"><b>Apps:</b> Maps/Uber, parking apps, kiosk, MyTSA/CLEAR</div>
+          <div class="step-gap"><b>Gap:</b> No visibility into travel/security delays; parking disconnected from flight status</div>
+        </div>
+        <div class="step">
+          <div class="step-num mono">04</div>
+          <div class="step-label">Gate &amp; Boarding</div>
+          <div class="step-meta"><b>Apps:</b> Airline app, airport displays</div>
+          <div class="step-gap"><b>Gap:</b> Gate and boarding updates are fragmented</div>
+        </div>
+        <div class="step">
+          <div class="step-num mono">05</div>
+          <div class="step-label">In-Flight &amp; Connections</div>
+          <div class="step-meta"><b>Apps:</b> Airline app, in-flight Wi-Fi, customer service</div>
+          <div class="step-gap"><b>Gap:</b> Little visibility onward; heavy reliance on human agents to recover</div>
+        </div>
+        <div class="step">
+          <div class="step-num mono">06</div>
+          <div class="step-label">Arrival &amp; Beyond</div>
+          <div class="step-meta"><b>Apps:</b> Airline app, Uber/Lyft, Concur, email</div>
+          <div class="step-gap"><b>Gap:</b> Poor baggage visibility; ground transport doesn't adapt; info stays fragmented</div>
+        </div>
+      </div>
+      <p class="implication"><b>Insight:</b> it's one journey to the passenger — but no single app or company owns it end to end. That fragmentation across touchpoints is where confidence breaks down.</p>
+    </div>
+  </section>
+
+  <section class="slide" id="s3">
+    <div class="content">
+      <p class="eyebrow">Journey observations</p>
+      <h1 class="title serif wide">Visibility only arrives one step at a time</h1>
+      <p class="dek">Mapping the journey surfaced a pattern that matters more than any single pain point.</p>
+      <div>
+        <div class="theme-row"><h4>More touchpoints, more failure points</h4><p>Six stages, six different apps and owners — every handoff is a new place something can go wrong.</p></div>
+        <div class="theme-row"><h4>It's a waterfall, not a map</h4><p>You don't find out how long security will take until you're standing in it. Each step only reveals itself after the last one ends — there's no end-to-end visibility upfront.</p></div>
+        <div class="theme-row"><h4>So travelers constantly buffer</h4><p>Extra time leaving the house, extra time at the gate, "just in case" — padding every estimate because they can't see what's ahead. That uncertainty is what's actually anxiety-inducing, more than any single delay.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s4">
+    <div class="content">
+      <p class="eyebrow">Industry research</p>
+      <h1 class="title serif wide">Across every source, the same three things surface</h1>
+      <p class="dek">Secondary research — five independent source clusters, not just one survey — converges on the same pattern.</p>
+      <div>
+        <div class="finding-row">
+          <div class="finding-num mono">01</div>
+          <div class="finding-body">
+            <h4>Delay &amp; Cancellation Concerns</h4>
+            <p>89% of travelers expect a delay or cancellation on their next trip; 2025 was the worst U.S. on-time performance since 2014.</p>
+            <p class="src">Fortune / Hopper survey of 1,000+ U.S. travelers (May 2026); U.S. PIRG "Plane Truth 2026"</p>
+          </div>
+        </div>
+        <div class="finding-row">
+          <div class="finding-num mono">02</div>
+          <div class="finding-body">
+            <h4>Post-Disruption Service</h4>
+            <p>43% of disrupted travelers were still unresolved after 2+ hours. Top barriers: long wait times (48%), limited rebooking options (42%), not knowing what options existed (34%).</p>
+            <p class="src">Fortune / Hopper survey, May 2026</p>
+          </div>
+        </div>
+        <div class="finding-row">
+          <div class="finding-num mono">03</div>
+          <div class="finding-body">
+            <h4>Clear Communication</h4>
+            <p>65% say communication matters most, but only 26% get timely updates and 39% get zero proactive notice during disruption.</p>
+            <p class="src">Unily / Global Traveler, Jul 2026 — independently corroborates a UK CAA finding (~2/3 of disrupted travelers frustrated with communication)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s5">
+    <div class="content">
+      <p class="eyebrow">Primary research</p>
+      <h1 class="title serif wide">Real interviews confirm the pattern</h1>
+      <p class="dek">Using a structured interview template — trip context, stage-by-stage stress, verbatim quotes, a synthesized opportunity signal — I talked to real travelers. Their stories independently converge with the industry data.</p>
+      <div class="evidence-card">
+        <h4>Sarah — leisure traveler, HSV↔MSN, basic economy, major delay + missed connections</h4>
+        <ul>
+          <li><em>Evidence:</em> "~30 people missed the boarding time of this flight due to the security line" — after a 1+ hour TSA wait at 5:15am, her partner sprinted to the gate to make it.</li>
+          <li><em>Observation:</em> only ~2 staff handled rebooking for ~50 disrupted passengers — capacity, not just communication, was the constraint.</li>
+          <li><em>Signal:</em> supports the disruption-recovery hypothesis, and adds a new one — security-line and rebooking staffing capacity.</li>
+        </ul>
+      </div>
+      <div class="evidence-card">
+        <h4>Arjun — leisure traveler, missed connection during disruption</h4>
+        <ul>
+          <li><em>Evidence:</em> "Staff first said no alternatives were available — another agent eventually found a routing that got him home."</li>
+          <li><em>Observation:</em> the outcome depended on which agent he reached; his airport parking reservation also expired mid-disruption, forcing an unplanned extension and extra charges.</li>
+          <li><em>Signal:</em> independently confirms the recovery hypothesis, and reveals disruption's cascade into unrelated logistics.</li>
+        </ul>
+      </div>
+      <div class="evidence-card">
+        <h4>Aparna — business traveler, HSV→DCA, basic economy, cancellation + secondary weather delay</h4>
+        <ul>
+          <li><em>Evidence:</em> "The flight was delayed and then cancelled. I had to call customer support to find and confirm another flight." The replacement flight was then itself delayed by weather — a second disruption stacked on the first.</li>
+          <li><em>Observation:</em> as a basic-economy passenger, she had no self-service rebooking path — recovery depended entirely on a phone call. The late arrival then forced her to adjust ground transportation on the fly.</li>
+          <li><em>Signal:</em> confirms the recovery hypothesis, and adds two new ones — fare class gates access to self-service recovery, and disruption cascades past the airport into ground-transport coordination.</li>
+        </ul>
+      </div>
+      <p class="insight-bar"><b>Insight:</b> three independent interviews converge on the same root cause — loss of visibility and control once a disruption starts, not the delay itself. Aparna's experience adds a new dimension: recovery options are also gated by fare class, and disruption effects reach beyond the airport into ground-transport coordination.</p>
+    </div>
+  </section>
+
+  <section class="slide" id="s6">
+    <div class="content">
+      <p class="eyebrow">Delay root cause</p>
+      <h1 class="title serif wide">Most delay isn't weather — it's the airline's own operations</h1>
+      <p class="dek">DOT's May 2026 breakdown of delay causes, by reporting carrier.</p>
+      <div class="rootcause-grid">
+        <div class="donut-wrap">
+          <div class="donut"><div class="donut-hole"><b class="mono">69%</b><span>of delayed flights are airline-side</span></div></div>
+          <div class="legend">
+            <div class="legend-row"><span class="legend-dot" style="background:var(--line)"></span>On-time <b>77.62%</b></div>
+            <div class="legend-row"><span class="legend-dot" style="background:var(--accent)"></span>Airline-side (carrier + late aircraft) <b>14.66%</b></div>
+            <div class="legend-row"><span class="legend-dot" style="background:var(--accent-2)"></span>External (NAS + weather + security) <b>6.50%</b></div>
+            <div class="legend-row"><span class="legend-dot" style="background:var(--text-faint)"></span>Cancelled / diverted <b>1.20%</b></div>
+          </div>
+        </div>
+        <div class="rootcause-body">
+          <h2>Of all delayed flights, <b>~69% — roughly 7 in 10</b> — trace to airline-side causes, not weather (0.70%) or security (0.04%).</h2>
+          <p class="nuance"><b>A nuance worth stating precisely:</b> DOT defines <i>Air Carrier Delay</i> as explicitly "within the airline's control" (maintenance, crew). <i>Late-Arriving Aircraft</i> is a knock-on effect — a previous leg ran late and the same aircraft/crew carries it forward — not always the airline's "fault" in the moment, but a direct symptom of how tightly airlines schedule aircraft rotations.</p>
+          <p class="nuance"><b>So what:</b> this reframes the opportunity — it isn't only about helping passengers after a disruption. A predictive layer that surfaces cascade risk before it fully hits (e.g., "your inbound aircraft is already 40 min late two legs upstream") could address the problem earlier in the chain.</p>
+          <p class="src">Source: DOT Air Travel Consumer Report, Table 7B — Overall Causes of Delay by Reporting Operating Carrier, May 2026</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s7">
+    <div class="content">
+      <p class="eyebrow">Synthesis</p>
+      <h1 class="title serif wide">When it's on time, it works. The moment it's disrupted, the same three things tend to break.</h1>
+      <p class="dek">Across interviews and industry research, the highest-severity pain concentrated around disruption: travelers lose clarity, recovery options, and control over the rest of the journey.</p>
+      <div>
+        <div class="theme-row">
+          <h4>1 · Generic communication is not enough</h4>
+          <p>Airlines often do send delay or gate-change alerts, but they say what happened, not what it means for a traveler's specific trip — whether they'll make a connection, or whether to wait, rush, call, or rebook. Aparna wanted "clearer and more frequent status updates"; Sarah's gate info lagged reality.<span class="theme-evidence">Only 26% of travelers get timely proactive updates during disruption (Unily/Global Traveler).</span></p>
+        </div>
+        <div class="theme-row">
+          <h4>2 · Recovery capacity can't keep pace</h4>
+          <p>Sarah: ~2 staff for ~50 disrupted passengers. Arjun: outcome depended on which agent he reached. Aparna: basic economy blocked self-service, forcing a phone call.<span class="theme-evidence">43% of disrupted travelers are still unresolved after 2+ hours (Fortune/Hopper).</span></p>
+        </div>
+        <div class="theme-row">
+          <h4>3 · The disruption leaks outside the airline</h4>
+          <p>Arjun's parking reservation expired mid-disruption. Aparna had to rework ground transport. Sarah's connections unraveled.<span class="theme-evidence">All three independently — none of these travelers ever needed the airline's help until the trigger hit.</span></p>
+        </div>
+      </div>
+      <p class="insight-bar"><b>Bridge to opportunity:</b> DOT data suggests many delays are airline-side or cascade-related, not purely weather-driven — so the opportunity is not just better alerts after disruption, but earlier, more personalized recovery guidance.</p>
+    </div>
+  </section>
+
+  <section class="slide dark" id="s8">
+    <div class="content">
+      <p class="eyebrow">Opportunity areas</p>
+      <h1 class="title serif wide">Three opportunity areas emerge — in priority order</h1>
+      <p class="dek">Each ties directly back to a synthesized theme and the evidence behind it.</p>
+      <table class="score-table">
+        <thead>
+          <tr><th style="width:24%">Opportunity area</th><th style="width:38%">What breaks today</th><th style="width:38%">Why this is worth prioritizing</th></tr>
+        </thead>
+        <tbody>
+          <tr class="top"><td>1. Personalized disruption guidance</td><td>Travelers know a flight is delayed, but not whether they will make a connection, whether to wait, rush, call, or rebook.</td><td>Strongest evidence across interviews and industry research; directly addresses panic, uncertainty, and agent overload.</td></tr>
+          <tr><td>2. Earlier risk detection &amp; recovery triggering</td><td>Airlines often know operational risk before passengers experience the full disruption, but recovery starts too late.</td><td>DOT data shows many delays are airline-side or cascade-related, meaning airlines may be able to surface risk and prepare options earlier.</td></tr>
+          <tr><td>3. Downstream coordination</td><td>Flight disruption spills into parking, rideshare, pickup, meetings, hotels, and arrival plans.</td><td>Important adjacent pain point, but lighter evidence and more cross-provider complexity, so treat as a follow-on extension.</td></tr>
+        </tbody>
+      </table>
+      <p class="question-bar">Live discussion: how might we help disrupted travelers evaluate recovery options and coordinate downstream logistics?</p>
+    </div>
+  </section>
+
+  <section class="slide" id="s9">
+    <div class="content">
+      <p class="eyebrow">Appendix A</p>
+      <h1 class="title serif">One passenger journey depends on many owners</h1>
+      <p class="dek">Fragmentation matters because every handoff creates another information gap for the traveler.</p>
+      <div class="ecosystem">
+        <div class="eco-col">
+          <div class="eco-chip">Airlines / carriers</div>
+          <div class="eco-chip">Airports</div>
+          <div class="eco-chip">TSA / security</div>
+          <div class="eco-chip">FAA / ATC</div>
+        </div>
+        <div class="eco-center">
+          <div class="eco-hub"><b>Passenger</b><span>single lived journey</span></div>
+        </div>
+        <div class="eco-col right">
+          <div class="eco-chip">Parking</div>
+          <div class="eco-chip">Rideshare / transit</div>
+          <div class="eco-chip">Retail / food</div>
+          <div class="eco-chip">Digital tools</div>
+        </div>
+      </div>
+      <p class="implication"><b>Backup detail:</b> handoffs are where confidence breaks down because ownership is split across providers, policies, physical spaces and digital systems.</p>
+    </div>
+  </section>
+
+  <section class="slide" id="s10">
+    <div class="content">
+      <p class="eyebrow">Appendix B</p>
+      <h1 class="title serif">The broad system needs a deliberate focus</h1>
+      <p class="dek">Once the journey and ecosystem are visible, the first product move is to narrow the inquiry.</p>
+      <div class="scope-grid">
+        <div class="scope-card"><p class="eyebrow">Geography</p><p>U.S. domestic commercial air travel</p></div>
+        <div class="scope-card"><p class="eyebrow">Stakeholder</p><p>Passenger experience, not operations</p></div>
+        <div class="scope-card"><p class="eyebrow">Initial segment</p><p>Leisure / economy travelers</p></div>
+      </div>
+      <div class="scope-io">
+        <div><b>In scope:</b> flight search and booking; travel to airport; check-in, security and boarding; in-flight experience, arrival, baggage and exit.</div>
+        <div><b>Out of scope:</b> crew scheduling, fleet maintenance, FAA/TSA policy optimization and airport infrastructure planning.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s11">
+    <div class="content">
+      <p class="eyebrow">Appendix C</p>
+      <h1 class="title serif">The working problem is confidence across fragmented handoffs</h1>
+      <p class="dek">The discovery question is whether the deeper pain is uncertainty and recovery, not isolated airport annoyances.</p>
+      <p class="problem-statement"><b>Working problem statement:</b> passengers do not just struggle with individual moments like delays, security or baggage. The deeper pain may be losing predictability, control and clear next steps as they move across journey handoffs.</p>
+      <div class="hyp-grid">
+        <div class="hyp-card"><h4>Delay recovery</h4><p>Disruption hurts most when options and next actions are unclear.</p></div>
+        <div class="hyp-card"><h4>Timing stress</h4><p>Airport anxiety comes from uncertainty, not only actual wait time.</p></div>
+        <div class="hyp-card thin"><h4>Coordination load</h4><p>Leisure and family trips add bags, people, timing and unfamiliar spaces. <em style="color:var(--text-faint)">(no direct interview evidence yet)</em></p></div>
+        <div class="hyp-card"><h4>Fragmented guidance</h4><p>Travelers stitch together airline, airport, TSA and ground transport information.</p></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="rail">
+  <div class="rail-side">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="rail-count mono" id="count">01 / 09</div>
+</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const countEl = document.getElementById('count');
+  const total = slides.length;
+
+  slides.forEach((s, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    d.addEventListener('click', () => slides[i].scrollIntoView({ behavior: 'smooth' }));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function currentIndex() {
+    const mid = deck.scrollTop + deck.clientHeight / 2;
+    let idx = 0;
+    slides.forEach((s, i) => { if (s.offsetTop <= mid) idx = i; });
+    return idx;
+  }
+
+  function updateUI() {
+    const idx = currentIndex();
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    countEl.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+  }
+
+  deck.addEventListener('scroll', () => { window.requestAnimationFrame(updateUI); });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    const idx = Math.max(0, currentIndex() - 1);
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    const idx = Math.min(total - 1, currentIndex() + 1);
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+      e.preventDefault();
+      const idx = Math.min(total - 1, currentIndex() + 1);
+      slides[idx].scrollIntoView({ behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      const idx = Math.max(0, currentIndex() - 1);
+      slides[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  updateUI();
+</script>
